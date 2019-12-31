@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="/static/css/font-awesome1.min.css">
+<link rel="stylesheet" type="text/css" href="/static/css/animate.css">
+<link rel="stylesheet" type="text/css" href="/static/css/select2.min.css">
+<link rel="stylesheet" type="text/css" href="/static/css/perfect-scrollbar.css">
+<link rel="stylesheet" type="text/css" href="/static/css/util.css">
+<link rel="stylesheet" type="text/css" href="/static/css/main2.css">
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script type="text/javascript">
+//달력에서 월을 바꿀 때, 새로운 날짜리스트를 ajax로 뿌려주기 위해 만들어 놓은 jason 생성
+var monList = {1:'January', 2:'Feburary', 3:'March', 4:'April', 5:'May', 6:'June', 7:'July', 8:'August', 9:'September', 10:'October', 11:'November', 12:'December'}
+var weekDayList = {0:'<li></li>', 1:'<li></li><li></li>', 2:'<li></li><li></li><li></li>', 3:'<li></li><li></li><li></li><li></li>', 4:'<li></li><li></li><li></li><li></li><li></li>', 5:'<li></li><li></li><li></li><li></li><li></li><li></li>', 6:''}
+
+window.onpageshow = function(event) {
+
+	if (event.persisted || (window.performance && window.performance.navigation.type == 2)) {
+
+		window.location.reload();
+
+	}
+
+};
+$(document).ready(function(){
+	$("#logout").click(function(){
+		//alert("msg");
+		location.href="/go/logout"
+		alert("로그아웃 성공")
+	});
+
+	$("#insert").click(function(){
+		//alert("msg");
+		location.href="/go/insert1"
+		
+	});
+	$(document).on('click', '.del', function(){
+		var a = confirm('정말 삭제하시겠습니까?')
+		if(a==true){
+			location.href="/go/delete?del="+$(this).val();
+		}
+		
+	})
+	//달력 날짜를 클릭하면 해당 날짜에 유저의 스케줄이 있는지 확인하여 있으면 달력밑에 뿌려주는 이벤트 함수
+	$(document).on('click', '.btn', function(){
+		date = $(this).val()
+		$("#showData").empty()
+		
+		$.ajax({
+			url : 'selected',
+			type : 'get',
+			data : {'date' : date}, 
+			dataType : 'json',
+			success : function(data){
+				$("#emaillll").empty()
+				$('#emaillll').append(data[0])	
+				
+				if (data[1] == 'yes') {
+					data.splice(0,2)
+
+					$('#tableList').empty()
+					$.each(data, function(index, entry){
+						if (Number(entry['star']) == 5) {
+							entry['star'] = "&#9733;&#9733;&#9733;&#9733;&#9733;"
+						} else if (Number(entry['star']) == 4) {
+							entry['star'] = "&#9733;&#9733;&#9733;&#9733;&#9734;"
+						} else if (Number(entry['star']) == 3) {
+							entry['star'] = "&#9733;&#9733;&#9733;&#9734;&#9734;"
+						} else if (Number(entry['star']) == 2) {
+							entry['star'] = "&#9733;&#9733;&#9734;&#9734;&#9734;"
+						} else {
+							entry['star'] = "&#9733;&#9734;&#9734;&#9734;&#9734;"							
+						}
+						$('#tableList').append("<tr class='row100 body' style='text-align:center'><td class='cell100 column4'>"+
+								entry["title"]+"</td><td class='cell100 column3'>"+entry["content"]+"</td></a><td class='cell100 column1'>"+
+								entry["star"]+"</td><td class='cell100 column2'><button class='del' value='"+entry["content"]+"'>x</button></td></tr>")
+
+						
+					})	
+				}
+			},
+			error : function(){
+				$("showData").text('err0r')
+			}
+		})
+	})	
+
+	//현재달력을 1개월 전으로 바꾸는 이벤트 함수
+	$("#prev").click(function(){
+		$.ajax({
+			url : 'calendar',
+			type : 'get',
+			data : {'month' : 'minus'}, 
+			dataType : 'json',
+			success : function(data){
+				$('#month').empty()
+				$('#days').empty()
+				$.each(monList, function(index, entry){
+					if(index == data['dayList'][0][1]) {
+						$('#month').append(entry)
+						$('#month').append("<br><span id='year' style='font-size:18px'></span>")								
+						$('#year').append(data['dayList'][0][0])
+	
+					}
+				})
+				$.each(weekDayList, function(ind, ent){
+					if(ind == data['dayList'][0][3]) {
+						$('#days').append(ent)
+						for(i=1; i<=data['dayList'].length; i++){
+							$('#days').append("<li><input type='button' value='"+data['dayList'][i-1][2]+"' class='btn' id='btn"+data['dayList'][i-1][2]+"'></li>")									
+						}
+	
+					}
+				})
+				$.each(data, function(index, entry){
+					if(index =='dayList'){
+						for(i = 1 ; i<=entry.length;i++){
+							$('#btn'+i).val(entry[i-1][2])
+							console.log(entry[i-1][2])
+							
+						}
+						
+					}	
+				
+				})
+				
+				for(i=1; i<=data['dayList'].length; i++){
+					for(j=0; j<data['scheduleDay'].length; j++){
+						if(i==data['scheduleDay'][j]){
+		
+							$('#btn'+i).css('background','cyan')
+						}
+					}
+				}
+						
+				
+			},
+			error : function(){
+				$("showData").text('err0r')
+			}
+		})
+	})
+	
+	//현재달력을 1개월 후로 바꾸는 이벤트 함수
+	$("#next").click(function(){
+
+		$.ajax({
+			url : 'calendar',
+			type : 'get',
+			data : {'month' : 'plus'}, 
+			dataType : 'json',
+			success : function(data){
+				$('#month').empty()
+				$('#days').empty()
+				$.each(monList, function(index, entry){
+					if(index == data['dayList'][0][1]) {
+						$('#month').append(entry)
+						$('#month').append("<br><span id='year' style='font-size:18px'></span>")								
+						$('#year').append(data['dayList'][0][0])
+
+					}
+				})
+				$.each(weekDayList, function(ind, ent){
+					if(ind == data['dayList'][0][3]) {
+						$('#days').append(ent)
+						for(i=1; i<=data['dayList'].length; i++){
+							$('#days').append("<li><input  class='btn' type='button' value='"+data['dayList'][i-1][2]+"' id='btn"+data['dayList'][i-1][2]+"'></li>")									
+						}
+
+					}
+				})
+				$.each(data, function(index, entry){
+					if(index =='dayList'){
+						for(i = 1 ; i<=entry.length;i++){
+							$('#btn'+i).val(entry[i-1][2])
+	
+						}
+
+					}	
+				
+				})
+				
+				
+				for(i=1; i<=data['dayList'].length; i++){
+					for(j=0; j<data['scheduleDay'].length; j++){
+						if(i==data['scheduleDay'][j]){
+
+							$('#btn'+i).css('background','cyan')
+						}
+					}
+				}
+				
+			},
+			error : function(){
+				$("showData").text('err0r')
+			}
+		})
+	})	
+})
+	
+	//달력이 다 호출되면 스케줄이 있는 날짜에 색상으로 표시를 해주는 함수
+	$(document).ready(function(){
+		const scheduleDay = {{scheduleDay}};
+		const dayList = {{dayList}};
+		
+		for(i=1; i<=dayList.length; i++){
+			for(j=0; j<scheduleDay.length; j++){
+				
+				if(i==scheduleDay[j]){
+
+					$('#btn'+i).css('background','cyan')
+				}
+			}
+		}
+		
+	});
+</script>
+<style>
+* {box-sizing: border-box;}
+ul {list-style-type: none;}
+body {font-family: Verdana, sans-serif;}
+
+.month {
+  padding: 70px 25px;
+  width: 100%;
+  background: #1abc9c;
+  text-align: center;
+}
+
+.month ul {
+  margin: 0;
+  padding: 0;
+}
+
+.month ul li {
+  color: white;
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+.month .prev {
+  float: left;
+  padding-top: 10px;
+}
+
+.month .next {
+  float: right;
+  padding-top: 10px;
+}
+
+.weekdays {
+  margin: 0;
+  padding: 10px 0;
+  background-color: #ddd;
+}
+
+.weekdays li {
+  display: inline-block;
+  width: 13.6%;
+  color: #666;
+  text-align: center;
+}
+
+.days {
+  padding: 10px 0;
+  background: #eee;
+  margin: 0;
+}
+
+.days li {
+  list-style-type: none;
+  display: inline-block;
+  width: 13.6%;
+  text-align: center;
+  margin-bottom: 5px;
+  font-size:12px;
+  color: #777;
+}
+
+.days li .active {
+  padding: 5px;
+  background: #1abc9c;
+  color: white !important
+}
+
+/* Add media queries for smaller screens */
+@media screen and (max-width:720px) {
+  .weekdays li, .days li {width: 13.1%;}
+}
+
+@media screen and (max-width: 420px) {
+  .weekdays li, .days li {width: 12.5%;}
+  .days li .active {padding: 2px;}
+}
+
+@media screen and (max-width: 290px) {
+  .weekdays li, .days li {width: 12.2%;}
+}
+</style>
+</head>
+<body>
+
+<input type="button" name="logout" class="btn btn-secondary btn-sm" id="logout" value="로그아웃">
+
+<h1 style="text-align:center;">Scheduler</h1>
+
+<div class="month">      
+  <ul>
+    <li class="prev" id="prev">&#10094;</li>
+    <li class="next" id="next">&#10095;</li>
+    <li id="month">
+      {% if dayList.0.1 == 1 %}
+		January
+	  {% elif dayList.0.1 == 2 %}
+	  	Feburary
+	  {% elif dayList.0.1 == 3 %}
+	  	March
+	  {% elif dayList.0.1 == 4 %}
+	  	April
+	  {% elif dayList.0.1 == 5 %}
+	  	May
+	  {% elif dayList.0.1 == 6 %}
+	  	June
+	  {% elif dayList.0.1 == 7 %}
+	  	July
+	  {% elif dayList.0.1 == 8 %}
+	  	August
+	  {% elif dayList.0.1 == 9 %}
+	  	September
+	  {% elif dayList.0.1 == 10 %}
+	  	October
+	  {% elif dayList.0.1 == 11 %}
+	  	November
+	  {% elif dayList.0.1 == 12 %}
+	  	December
+	  {% endif %}
+      <br><span id='year' style="font-size:18px">{{dayList.0.0}}</span>
+    </li>
+  </ul>
+</div>
+
+<ul class="weekdays">
+  <li>Su</li>
+  <li>Mo</li>
+  <li>Tu</li>
+  <li>We</li>
+  <li>Th</li>
+  <li>Fr</li>
+  <li>Sa</li>
+</ul>
+
+<ul id="days" class="days">
+{% if dayList.0.3 == 6 %}
+		
+{% elif dayList.0.3 == 0 %}
+<li></li>
+{% elif dayList.0.3 == 1 %}
+<li></li>
+<li></li>
+{% elif dayList.0.3 == 2 %}
+<li></li>
+<li></li>
+<li></li>
+{% elif dayList.0.3 == 3 %}
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+{% elif dayList.0.3 == 4 %}
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+{% elif dayList.0.3 == 5 %}
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+{% endif %}
+
+{% for i in dayList %}
+	<li><input type='button' value='{{i.2}}' class='btn' id='btn{{i.2}}'></li>
+{% endfor %}  
+</ul>
+
+
+<div style="height:1px; width:100%;"></div>
+
+
+
+<div class="limiter">
+		<div class="container-table100">
+			<div class="wrap-table100">
+				
+				<div style="text-align:center; margin-bottom:12px;">
+					<h2 id="emaillll"></h2>
+				<button id="insert" name="insert" class="btn btn-secondary btn-sm">일정등록</button> 
+					
+					
+				</div>
+				
+				<div class="table100 ver2 m-b-250">
+				
+					<div class="table100-head">
+						<table>
+							<thead>
+								<tr class="row100 head">
+									<th class="cell100 column4" style="text-align:center;">Title</th>
+									<th class="cell100 column3" style="text-align:center;">Content</th>
+									<th class="cell100 column1" style="text-align:center;">Star</th>
+									<th class="cell100 column2" style="text-align:center;"></th>
+								</tr>
+							</thead>
+						</table>
+					</div>
+
+					<div class="table100-body js-pscroll">
+						 
+						<table id='tableList' style="text-align:center">
+								
+						
+						 	
+						</table>
+					</div>
+						
+				</div>
+
+			</div>
+		</div>
+	</div>
+	
+	
+	<script src="/static/js/jquery-3.2.1.min.js"></script>
+	<script src="/static/js/popper.js"></script>
+	<script src="/static/js/bootstrap.min.js"></script>
+	<script src="/static/js/select2.min.js"></script>
+	<script src="/static/js/perfect-scrollbar.min.js"></script>
+	<script>
+		$('.js-pscroll').each(function(){
+			var ps = new PerfectScrollbar(this);
+
+			$(window).on('resize', function(){
+				ps.update();
+			})
+		});
+			
+		
+	</script>
+	<script src="/static/js/main.js"></script>
+</body>
+</html>

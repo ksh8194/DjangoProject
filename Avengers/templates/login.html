@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Scheduler Log-in</title>
+
+<link rel='stylesheet' href='http://codepen.io/assets/libs/fullpage/jquery-ui.css'>
+
+<link rel="stylesheet" href="/static/css/style.css" media="screen" type="text/css" />
+
+<script src='http://codepen.io/assets/libs/fullpage/jquery_and_jqueryui.js'></script>
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script type="text/javascript">
+
+$(document).ready(function(){
+	$("#login").click(function(e){
+		e.preventDefault();
+		
+		if(jQuery.trim(jQuery('#email').val()).length == 0){
+			jQuery('#emailErrorMsg').html("<b>이메일을 입력해주세요.</b>");
+			jQuery('#email').val("");
+			jQuery('#email').focus();
+			return
+			
+		}
+		if(jQuery.trim(jQuery('#passwd').val()).length == 0){
+			jQuery('#passwdErrorMsg').html("<b>비밀번호를 입력해주세요.</b>");
+			jQuery('#passwd').val("");
+			jQuery('#passwd').focus();
+			return
+							
+			}
+		
+		
+		frm.submit();
+	});
+	
+	
+	
+	$("#register").click(function(){
+		location.href="/go/register1"
+		
+	});
+	
+
+	jQuery('#email').on('keydown',function(){
+		jQuery('#emailErrorMsg').html("");
+	});
+	
+	jQuery('#passwd').on('keydown',function(){
+		jQuery('#passwdErrorMsg').html("");
+	});
+	jQuery('#repasswd').on('keydown',function(){
+		jQuery('#repasswdErrorMsg').html("");
+
+
+ 	});
+
+	
+});
+
+</script>
+</head>
+
+<body>
+
+  <div class="login-card">
+    <form action="/go/login" name="frm" method="POST"> {% csrf_token %}
+    <h1>Login</h1><br>
+    <input type="text" id="email" name="email" placeholder="Username">
+    <div id="emailErrorMsg" class="text-danger" style="font-size: 14px; color: red;"></div>		
+    <input type="password" id="passwd" name="passwd" placeholder="Password">
+    <div id="passwdErrorMsg" class="text-danger" style="font-size: 14px; color: red;"></div><br>
+    
+    		
+    <input type="submit" id="login" class="login login-submit" value="login">
+	<input type="button" id="register" class="login login-submit" value="Register"> 	
+  </form>
+</div>
+
+
+</body>
+
+</html>

@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<title>회원 가입</title>
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script type="text/javascript">
+
+
+jQuery(document).ready(function(){
+	var emailChk = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+	var pwdChk = /^.*(?=^.{10,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$/;
+	var phoneChk = /^\d{3,4}$/;
+	
+	jQuery('#reg').on('click',function(e){
+		e.preventDefault();
+		
+		//alert(pwdChk.test(jQuery.trim(jQuery('#passwd').val())));
+		
+		if(jQuery.trim(jQuery('#email').val()).length == 0){
+			jQuery('#emailErrorMsg').html("<b>이메일을 입력해주세요.</b>");
+			jQuery('#email').val("");
+			jQuery('#email').focus();
+			return;
+		}
+		
+		if(!emailChk.test(jQuery.trim(jQuery('#email').val()))){
+			jQuery('#emailErrorMsg').html("<b>올바른 이메일 형식이 아닙니다.</b>");
+			jQuery('#email').val("");
+			jQuery('#email').focus();
+			return;
+		}
+		
+
+		if(jQuery.trim(jQuery('#passwd').val()).length == 0){
+			jQuery('#passwdErrorMsg').html("<b>비밀번호를 입력해주세요.</b>");
+			jQuery('#passwd').val("");
+			jQuery('#passwd').focus();
+			return;
+		}
+		
+		
+		
+		if(jQuery.trim(jQuery('#repasswd').val()).length == 0){
+			jQuery('#repasswdErrorMsg').html("<b>비밀번호 확인 입력해주세요</b>");
+			jQuery('#repasswd').val("");
+			jQuery('#repasswd').focus();
+			return;
+		}
+		
+		if(jQuery.trim(jQuery('#passwd').val()) != jQuery.trim(jQuery('#repasswd').val())){
+			jQuery('#repasswdErrorMsg').html("<b>비밀번호와 비밀번호 확인을 일치시키세요</b>");
+			jQuery('#repasswd').val("");
+			jQuery('#repasswd').focus();
+			return;
+		}
+		
+		
+
+		
+		frm.submit();
+	});
+	
+	
+	jQuery('#email').on('keydown',function(){
+		jQuery('#emailErrorMsg').html("");
+	});
+	
+	jQuery('#passwd').on('keydown',function(){
+		jQuery('#passwdErrorMsg').html("");
+	});
+	jQuery('#repasswd').on('keydown',function(){
+		jQuery('#repasswdErrorMsg').html("");
+
+
+ 	});
+
+ 	
+
+ 	});
+  
+</script>
+</head>
+<body>
+	<form name="frm" method="POST" action="/go/register2">{% csrf_token %}
+		<table width="940" style="padding: 5px 0 5px 0;">
+			<tr height="2" bgcolor="#FFC8C3">
+				<td colspan="2"></td>
+			</tr>
+			<tr>
+				<th>이메일</th>
+				<td><input type="text" id="email" name="email">
+								<div id="emailErrorMsg" class="text-danger" style="font-size: 14px;"></div>
+				</td>
+			</tr>
+			<tr>
+				<th>비밀번호</th>
+				<td><input type="password" id="passwd" name="passwd">				<div id="passwdErrorMsg" class="text-danger" style="font-size: 14px;"></div>
+				</td>
+			</tr>
+			<tr>
+				<th>비밀번호 확인</th>
+				<td><input type="password" id="repasswd" name="repasswd">				<div id="repasswdErrorMsg" class="text-danger" style="font-size: 14px;"></div>
+				</td>
+			</tr>
+			<tr height="2" bgcolor="#FFC8C3">
+				<td colspan="2"></td>
+			</tr>
+			<tr>
+				<td colspan="2" align="center"><input type="submit" id="reg"
+					value="회원가입"> <input type="reset" value="취소"></td>
+			</tr>
+		</table>
+	</form>
+</body>
+</html>

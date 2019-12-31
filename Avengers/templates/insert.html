@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel='stylesheet' href='http://codepen.io/assets/libs/fullpage/jquery-ui.css'>
+
+<link rel="stylesheet" href="/static/css/style.css" media="screen" type="text/css" />
+
+<script src='http://codepen.io/assets/libs/fullpage/jquery_and_jqueryui.js'></script>
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#star5").click(function(e){
+		$("#star1").html("&#9733;")
+		$("#star2").html("&#9733;")
+		$("#star3").html("&#9733;")
+		$("#star4").html("&#9733;")
+		$("#star5").html("&#9733;")
+		$("#count").val("5")
+		
+	});
+	$("#star4").click(function(e){
+		$("#star1").html("&#9733;")
+		$("#star2").html("&#9733;")
+		$("#star3").html("&#9733;")
+		$("#star4").html("&#9733;")
+		$("#star5").html("&#9734;")
+		$("#count").val("4")
+		
+	});
+	$("#star3").click(function(e){
+		$("#star1").html("&#9733;")
+		$("#star2").html("&#9733;")
+		$("#star3").html("&#9733;")
+		$("#star4").html("&#9734;")
+		$("#star5").html("&#9734;")
+		$("#count").val("3")
+		
+
+		
+	});
+	$("#star2").click(function(e){
+		$("#star1").html("&#9733;")
+		$("#star2").html("&#9733;")
+		$("#star3").html("&#9734;")
+		$("#star4").html("&#9734;")
+		$("#star5").html("&#9734;")
+
+		$("#count").val("2")
+		
+
+		
+	});
+	
+	$("#star1").click(function(e){
+		$("#star1").html("&#9733;")
+		$("#star2").html("&#9734;")
+		$("#star3").html("&#9734;")
+		$("#star4").html("&#9734;")
+		$("#star5").html("&#9734;")
+
+		$("#count").val("1")
+		
+		
+	});
+	
+	$("#gomain").click(function(){
+		location.href="/go/login?flag=yes"
+		
+		
+	});
+	
+	$("#register").click(function(e){
+		e.preventDefault();
+		if(jQuery.trim(jQuery('#title').val()).length == 0){
+			jQuery('#titleErrorMsg').html("<b>제목을 입력해주세요.</b>");
+			jQuery('#title').val("");
+			jQuery('#title').focus();
+			return
+		}
+		if(jQuery.trim(jQuery('#content').val()).length == 0){
+			jQuery('#contentErrorMsg').html("<b>내용을 입력해주세요.</b>");
+			jQuery('#content').val("");
+			jQuery('#content').focus();
+			return
+		}
+	
+		frm.submit();
+	});
+	
+	  $("#datePicker").datepicker({
+	        dateFormat: 'yy-mm-dd' //Input Display Format 변경
+	          ,showOtherMonths: true //빈 공간에 현재월의 앞뒤월의 날짜를 표시
+	          ,showMonthAfterYear:true //년도 먼저 나오고, 뒤에 월 표시
+	          ,changeYear: true //콤보박스에서 년 선택 가능
+	          ,changeMonth: true //콤보박스에서 월 선택 가능  
+	          ,showOn: "both" //button:버튼을 표시하고,버튼을 눌러야만 달력 표시 ^ both:버튼을 표시하고,버튼을 누르거나 input을 클릭하면 달력 표시  
+	          ,buttonImage: "http://jqueryui.com/resources/demos/datepicker/images/calendar.gif" //버튼 이미지 경로
+	          ,buttonImageOnly: true //기본 버튼의 회색 부분을 없애고, 이미지만 보이게 함
+	          ,buttonText: "선택" //버튼에 마우스 갖다 댔을 때 표시되는 텍스트                
+	          ,yearSuffix: "년" //달력의 년도 부분 뒤에 붙는 텍스트
+	          ,monthNamesShort: ['1','2','3','4','5','6','7','8','9','10','11','12'] //달력의 월 부분 텍스트
+	          ,monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'] //달력의 월 부분 Tooltip 텍스트
+	          ,dayNamesMin: ['일','월','화','수','목','금','토'] //달력의 요일 부분 텍스트
+	          ,dayNames: ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'] //달력의 요일 부분 Tooltip 텍스트
+	          ,setDate : 'today'
+	          ,minDate: 'dtNow'
+	          
+	     });
+
+	
+	
+
+	jQuery('#title').on('keydown',function(){
+		jQuery('#titleErrorMsg').html("");
+	});
+	
+	jQuery('#content').on('keydown',function(){
+		jQuery('#contentErrorMsg').html("");
+	});
+	
+	
+	
+});
+
+</script>
+</head>
+<body>
+  <div class="login-card">
+    <form action="/go/insert2" method ="POST" name="frm"> {% csrf_token %}
+    <h1>일정등록</h1><br>
+    <input type="text" id="title" name="title" placeholder="제목">
+	<div id="titleErrorMsg" class="text-danger" style="font-size: 14px; color: red;"></div>
+    <textarea name="content" cols="36" rows="8" id="content" name="content" placeholder="내용"></textarea>
+    <div id="contentErrorMsg" class="text-danger" style="font-size: 14px; color: red;"></div>
+ 	<input type="date" id="datePicker" name="datePicker"><br>
+    <div id="star1" class="star" style="float:left;">&#9734;</div>
+    <div id="star2" class="star" style="float:left;">&#9734;</div> 
+     <div id="star2ErrorMsg" class="text-danger" style="font-size: 14px; color: red;"></div>
+    <div id="star3" class="star" style="float:left;">&#9734;</div>
+     <div id="star3ErrorMsg" class="text-danger" style="font-size: 14px; color: red;"></div>
+    <div id="star4" class="star" style="float:left;">&#9734;</div>
+     <div id="star4ErrorMsg" class="text-danger" style="font-size: 14px; color: red;"></div>
+    <div id="star5" class="star" style="float:left;">&#9734;</div>
+     <div id="star5ErrorMsg" class="text-danger" style="font-size: 14px; color: red;"></div>
+    <div id="titleErrorMsg" class="text-danger" style="font-size: 14px; color: red;"></div>		
+    <div id="contentErrorMsg" class="text-danger" style="font-size: 14px; color: red;"></div>
+    <div id="star1ErrorMsg" class="text-danger" style="font-size: 14px; color: red;"></div>
+    <input type="hidden" id="count" name="count" value="">
+    
+    <input type="submit" id="register" class="login login-submit" value="등록">
+	<input type="button" id="gomain" class="login login-submit" value="메인으로"> 	
+  
+	</form>
+    
+    		
+    		
+</div>
+
+
+
+
+
+</body>
+</html>
